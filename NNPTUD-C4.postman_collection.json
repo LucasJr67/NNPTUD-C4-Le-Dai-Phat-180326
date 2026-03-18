@@ -1,0 +1,162 @@
+{
+	"info": {
+		"_postman_id": "nnptud-c4-collection",
+		"name": "NNPTUD-C4 Auth API",
+		"description": "Collection test Login, Me, ChangePassword với JWT RS256",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api/v1"
+		},
+		{
+			"key": "token",
+			"value": ""
+		}
+	],
+	"item": [
+		{
+			"name": "1. Register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"testuser1\",\n    \"password\": \"Test@1234\",\n    \"email\": \"testuser1@gmail.com\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/register",
+					"host": ["{{baseUrl}}"],
+					"path": ["auth", "register"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"if (jsonData.token) {",
+							"    pm.collectionVariables.set('token', jsonData.token);",
+							"    console.log('Token saved successfully');",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"testuser1\",\n    \"password\": \"Test@1234\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/login",
+					"host": ["{{baseUrl}}"],
+					"path": ["auth", "login"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. Me (Get Current User)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/auth/me",
+					"host": ["{{baseUrl}}"],
+					"path": ["auth", "me"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4. Change Password",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"oldPassword\": \"Test@1234\",\n    \"newPassword\": \"NewPass@5678\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/changepassword",
+					"host": ["{{baseUrl}}"],
+					"path": ["auth", "changepassword"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5. Change Password - Validate Error (weak password)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"oldPassword\": \"Test@1234\",\n    \"newPassword\": \"123\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/changepassword",
+					"host": ["{{baseUrl}}"],
+					"path": ["auth", "changepassword"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6. Me - No Token (401)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/auth/me",
+					"host": ["{{baseUrl}}"],
+					"path": ["auth", "me"]
+				}
+			},
+			"response": []
+		}
+	]
+}
